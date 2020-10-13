@@ -38,6 +38,44 @@
         "EdgeHubConnectionString": "${config:azure-iot-edge.EdgeHubConnectionString}",
         "EdgeModuleCACertificateFile": "${config:azure-iot-edge.EdgeModuleCACertificateFile}"
       }
+    },
+    {
+      "name": "SqlServerHealthModule Remote Debug (.NET Core)",
+      "type": "coreclr",
+      "request": "attach",
+      "processId": "${command:pickRemoteProcess}",
+      "pipeTransport": {
+        "pipeProgram": "docker",
+        "pipeArgs": [
+          "exec",
+          "-i",
+          "SqlServerHealthModule",
+          "sh",
+          "-c"
+        ],
+        "debuggerPath": "~/vsdbg/vsdbg",
+        "pipeCwd": "${workspaceFolder}",
+        "quoteArgs": true
+      },
+      "sourceFileMap": {
+        "/app": "${workspaceFolder}/modules/SqlServerHealthModule"
+      },
+      "justMyCode": true
+    },
+    {
+      "name": "SqlServerHealthModule Local Debug (.NET Core)",
+      "type": "coreclr",
+      "request": "launch",
+      "program": "${workspaceRoot}/modules/SqlServerHealthModule/bin/Debug/netcoreapp3.1/SqlServerHealthModule.dll",
+      "args": [],
+      "cwd": "${workspaceRoot}/modules/SqlServerHealthModule",
+      "internalConsoleOptions": "openOnSessionStart",
+      "stopAtEntry": false,
+      "console": "internalConsole",
+      "env": {
+        "EdgeHubConnectionString": "${config:azure-iot-edge.EdgeHubConnectionString}",
+        "EdgeModuleCACertificateFile": "${config:azure-iot-edge.EdgeModuleCACertificateFile}"
+      }
     }
   ]
 }

@@ -70,6 +70,26 @@
               "image": "mcr.microsoft.com/azureiotedge-simulated-temperature-sensor:1.0",
               "createOptions": {}
             }
+          },
+          "sqlserver": {
+            "type": "docker",
+            "settings": {
+              "image": "mcr.microsoft.com/mssql/server:latest",
+              "createOptions": "{\"Env\":[\"ACCEPT_EULA=Y\",\"MSSQL_SA_PASSWORD=9@uD4kH@\"],\"HostConfig\":{\"PortBindings\":{\"1433/tcp\":[{\"HostPort\":\"1401\"}]},\"Mounts\":[{\"Type\":\"volume\",\"Source\":\"sqlVolume\",\"Target\":\"/var/opt/mssql\"}]}}"
+            },
+            "version": "1.0",
+            "status": "running",
+            "restartPolicy": "always"
+          },
+          "SqlServerHealthModule": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "${MODULES.SqlServerHealthModule}",
+              "createOptions": {}
+            }
           }
         }
       }
@@ -79,7 +99,9 @@
         "schemaVersion": "1.0",
         "routes": {
           "HelloEdgeModuleToIoTHub": "FROM /messages/modules/HelloEdgeModule/outputs/* INTO $upstream",
-          "sensorToHelloEdgeModule": "FROM /messages/modules/SimulatedTemperatureSensor/outputs/temperatureOutput INTO BrokeredEndpoint(\"/modules/HelloEdgeModule/inputs/input1\")"
+          "sensorToHelloEdgeModule": "FROM /messages/modules/SimulatedTemperatureSensor/outputs/temperatureOutput INTO BrokeredEndpoint(\"/modules/HelloEdgeModule/inputs/input1\")",
+          "SqlServerHealthModuleToIoTHub": "FROM /messages/modules/SqlServerHealthModule/outputs/* INTO $upstream",
+          "SqlServerHealthModule": "FROM /messages/modules/SqlServerHealthModule/outputs/sqlServerHealthCheckOutput INTO $upstream"
         },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200
